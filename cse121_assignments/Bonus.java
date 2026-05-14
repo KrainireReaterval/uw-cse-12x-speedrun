@@ -32,7 +32,7 @@ import java.util.*;
  */
 public class Bonus {
     public static void main(String[] args) {
-        String name = "HI";       // TODO: change to your own name or any word!
+        String name = "fighter";       // TODO: change to your own name or any word!
         Random rand = new Random();
 
         // TODO: Write an outer for loop that traverses each character of name.
@@ -41,9 +41,18 @@ public class Bonus {
         //         2. Use an inner for loop to print that many stars (no newline between stars)
         //         3. Print a space and the current character using charAt(i), then a newline
         //         4. Print "--------" (8 dashes) on its own line
-
+            for (int i = 0; i < name.length(); i++) {
+                int numStars = rand.nextInt(5) + 1; // Random number between 1 and 5
+                for (int j = 0; j < numStars; j++) {
+                    System.out.print("*"); // Print stars without newline
+                }
+                System.out.println(" " + name.charAt(i)); // Print space and character, then newline
+                System.out.println("--------"); // Print separator line
+            }
         // TODO: After the outer loop, print the two summary lines:
         //         "Total chars: " + name.length()
         //         "Max stars possible: " + (int) Math.pow(5, 2)
+        System.out.println("Total chars: " + name.length());
+        System.out.println("Max stars possible: " + (int) Math.pow(5, 2));
     }
 }
