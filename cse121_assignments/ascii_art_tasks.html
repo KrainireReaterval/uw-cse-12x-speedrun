@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CSE 121 ASCII Art Task List</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Oxanium:wght@300;500;700&display=swap');
+
+  :root {
+    --bg: #0a0f1a;
+    --surface: #111827;
+    --border: #1e3a5f;
+    --accent: #00d4ff;
+    --accent2: #ff6b35;
+    --accent3: #39ff14;
+    --text: #c9d6e8;
+    --muted: #4a6080;
+    --done: #1a3a1a;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Oxanium', sans-serif;
+    min-height: 100vh;
+    padding: 40px 20px;
+    background-image:
+      radial-gradient(ellipse at 20% 10%, rgba(0,212,255,0.05) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 90%, rgba(255,107,53,0.05) 0%, transparent 50%);
+  }
+
+  .container { max-width: 860px; margin: 0 auto; }
+
+  header {
+    border-left: 3px solid var(--accent);
+    padding-left: 20px;
+    margin-bottom: 48px;
+  }
+
+  .tag {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.1;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .subtitle {
+    margin-top: 10px;
+    color: var(--muted);
+    font-size: 0.9rem;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .progress-bar-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    height: 6px;
+    margin: 32px 0 48px;
+    overflow: hidden;
+  }
+
+  .progress-bar {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--accent), var(--accent3));
+    transition: width 0.4s ease;
+    border-radius: 4px;
+  }
+
+  .progress-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: -40px;
+    margin-bottom: 32px;
+    text-align: right;
+  }
+
+  .section {
+    margin-bottom: 40px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .section-num {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 2px 8px;
+    letter-spacing: 2px;
+  }
+
+  .section-title {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  .task {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--border);
+    border-radius: 2px;
+    padding: 18px 20px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .task:hover {
+    border-color: var(--accent);
+    border-left-color: var(--accent);
+    background: #131f30;
+  }
+
+  .task.done {
+    background: var(--done);
+    border-color: #2d5a2d;
+    border-left-color: var(--accent3);
+    opacity: 0.7;
+  }
+
+  .task.bonus {
+    border-left-color: var(--accent2);
+    background: #1a120d;
+  }
+
+  .task.bonus:hover {
+    border-color: var(--accent2);
+    border-left-color: var(--accent2);
+    background: #221510;
+  }
+
+  .task.bonus.done {
+    border-left-color: var(--accent3);
+  }
+
+  .task-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+
+  .checkbox {
+    width: 18px;
+    height: 18px;
+    border: 1px solid var(--muted);
+    border-radius: 2px;
+    flex-shrink: 0;
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 12px;
+    color: var(--accent3);
+  }
+
+  .task.done .checkbox {
+    background: var(--accent3);
+    border-color: var(--accent3);
+    color: #000;
+  }
+
+  .task.bonus .checkbox {
+    border-color: var(--accent2);
+  }
+
+  .task-title {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #e2eaf5;
+    flex: 1;
+  }
+
+  .task.done .task-title {
+    text-decoration: line-through;
+    color: var(--muted);
+  }
+
+  .badges {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 2px;
+  }
+
+  .badge {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 9px;
+    padding: 2px 7px;
+    border-radius: 2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  .badge-concept { background: rgba(0,212,255,0.1); color: var(--accent); border: 1px solid rgba(0,212,255,0.3); }
+  .badge-bonus { background: rgba(255,107,53,0.1); color: var(--accent2); border: 1px solid rgba(255,107,53,0.3); }
+  .badge-hard { background: rgba(255,50,50,0.1); color: #ff5555; border: 1px solid rgba(255,50,50,0.3); }
+
+  .task-body {
+    margin-top: 14px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border);
+    display: none;
+  }
+
+  .task.open .task-body { display: block; }
+
+  .task-desc {
+    font-size: 0.88rem;
+    color: var(--text);
+    line-height: 1.7;
+    margin-bottom: 14px;
+  }
+
+  .expected {
+    background: #080d14;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 14px 16px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.82rem;
+    color: var(--accent3);
+    white-space: pre;
+    line-height: 1.5;
+    overflow-x: auto;
+  }
+
+  .expected-label {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .hint {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(0,212,255,0.04);
+    border-left: 2px solid var(--accent);
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .hint strong { color: var(--accent); }
+
+  .code-quality {
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(57,255,20,0.04);
+    border-left: 2px solid var(--accent3);
+    font-size: 0.82rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .code-quality strong { color: var(--accent3); }
+
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  .bonus-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 40px 0 16px;
+  }
+
+  .bonus-badge-big {
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    border: 1px solid var(--accent2);
+    padding: 3px 10px;
+    letter-spacing: 2px;
+  }
+
+  .bonus-title-big {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+
+  footer {
+    margin-top: 60px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="tag">CSE 121 · Week 0–2 · ASCII Art Practice</div>
+    <h1>ASCII Art <span>Task List</span></h1>
+    <div class="subtitle">// click any task to expand · click checkbox to mark complete</div>
+  </header>
+
+  <div class="progress-bar-wrap">
+    <div class="progress-bar" id="progressBar"></div>
+  </div>
+  <div class="progress-label" id="progressLabel">0 / 7 completed</div>
+
+  <!-- SECTION 1 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">For Loops · Basics</span>
+    </div>
+
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="checkbox" onclick="toggleDone(event, this)"></div>
+        <div>
+          <div class="task-title">Task 1 — Print a horizontal line of stars</div>
+          <div class="badges">
+            <span class="badge badge-concept">for loop</span>
+            <span class="badge badge-concept">print vs println</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-desc">
+          Use a single <code>for</code> loop to print exactly 10 stars on one line, followed by a newline.
+          Do NOT hardcode the string <code>"**********"</code> — the loop must do the work.
+        </div>
+        <div class="expected-label">Expected Output</div>
+        <div class="expected">**********</div>
+        <div class="hint"><strong>Hint:</strong> Use <code>System.out.print("*")</code> inside the loop, and a single <code>System.out.println()</code> after.</div>
+        <div class="code-quality"><strong>Code Quality:</strong> Use <code>i</code> as your loop variable name (CSE 121 convention). No magic numbers — consider if a class constant makes sense here.</div>
+      </div>
+    </div>
+
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="checkbox" onclick="toggleDone(event, this)"></div>
+        <div>
+          <div class="task-title">Task 2 — Print a numbered staircase</div>
+          <div class="badges">
+            <span class="badge badge-concept">for loop</span>
+            <span class="badge badge-concept">string concat</span>
+            <span class="badge badge-concept">types</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-desc">
+          Use a <code>for</code> loop to print each row number followed by a colon and a star, for rows 1 through 5.
+        </div>
+        <div class="expected-label">Expected Output</div>
+        <div class="expected">1: *
+2: *
+3: *
+4: *
+5: *</div>
+        <div class="hint"><strong>Hint:</strong> Inside the loop, use string concatenation with <code>i</code> to build each line.</div>
+        <div class="code-quality"><strong>Code Quality:</strong> Combine the number, colon, and star into a single <code>println</code> statement — don't use multiple prints for the same line.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Nested For Loops · Scope</span>
+    </div>
+
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="checkbox" onclick="toggleDone(event, this)"></div>
+        <div>
+          <div class="task-title">Task 3 — Print a solid rectangle</div>
+          <div class="badges">
+            <span class="badge badge-concept">nested loops</span>
+            <span class="badge badge-concept">scope</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-desc">
+          Use nested <code>for</code> loops to print a 5-wide, 3-tall rectangle of stars.
+          The outer loop controls rows, the inner loop controls columns.
+        </div>
+        <div class="expected-label">Expected Output</div>
+        <div class="expected">*****
+*****
+*****</div>
+        <div class="hint"><strong>Hint:</strong> Outer loop runs 3 times (rows), inner loop runs 5 times (columns). Inner uses <code>print</code>, outer uses <code>println</code> after the inner loop.</div>
+        <div class="code-quality"><strong>Code Quality:</strong> Use <code>i</code> for the outer loop and <code>j</code> for the inner loop. Remember: <code>j</code> is out of scope outside its loop!</div>
+      </div>
+    </div>
+
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="checkbox" onclick="toggleDone(event, this)"></div>
+        <div>
+          <div class="task-title">Task 4 — Print a growing triangle</div>
+          <div class="badges">
+            <span class="badge badge-concept">nested loops</span>
+            <span class="badge badge-concept">loop dependency</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-desc">
+          Use nested loops where the inner loop's count depends on the outer loop variable.
+          Print a left-aligned triangle that grows from 1 star to 5 stars.
+        </div>
+        <div class="expected-label">Expected Output</div>
+        <div class="expected">*
+**
+***
+****
+*****</div>
+        <div class="hint"><strong>Hint:</strong> Inner loop condition: <code>j &lt;= i</code>. This is the key pattern — the inner loop runs <em>i</em> times on iteration <em>i</em>.</div>
+        <div class="code-quality"><strong>Code Quality:</strong> The inner loop should start at <code>1</code>, not <code>i</code>. Keep variable declarations inside the most local scope possible.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3 -->
+  <div class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">String Traversal · Fencepost</span>
+    </div>
+
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="checkbox" onclick="toggleDone(event, this)"></div>
+        <div>
+          <div class="task-title">Task 5 — Print each character on its own line with its index</div>
+          <div class="badges">
+            <span class="badge badge-concept">string traversal</span>
+            <span class="badge badge-concept">charAt</span>
+            <span class="badge badge-concept">length</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-desc">
+          Given the String <code>"JAVA"</code>, use a <code>for</code> loop with <code>charAt</code> and <code>length</code>
+          to print each character alongside its index position.
+        </div>
+        <div class="expected-label">Expected Output</div>
+        <div class="expected">[0] J
+[1] A
+[2] V
+[3] A</div>
+        <div class="hint"><strong>Hint:</strong> Loop from <code>i = 0</code> to <code>i &lt; s.length()</code>. Use string concatenation to build each line: <code>"[" + i + "] " + s.charAt(i)</code>.</div>
+        <div class="code-quality"><strong>Code Quality:</strong> Store the String in a descriptive variable, not a magic literal repeated in the loop. Combine everything into one <code>println</code> per iteration.</div>
+      </div>
+    </div>
+
+    <div class="task" onclick="toggleTask(this)">
+      <div class="task-header">
+        <div class="checkbox" onclick="toggleDone(event, this)"></div>
+        <div>
+          <div class="task-title">Task 6 — Print characters separated by arrows (fencepost)</div>
+          <div class="badges">
+            <span class="badge badge-concept">string traversal</span>
+            <span class="badge badge-concept">fencepost pattern</span>
+          </div>
+        </div>
+      </div>
+      <div class="task-body">
+        <div class="task-desc">
+          Given the String <code>"CODE"</code>, print each character separated by <code> -> </code> with no trailing arrow.
+          This is the fencepost pattern — n characters, n-1 separators.
+        </div>
+        <div class="expected-label">Expected Output</div>
+        <div class="expected">C -> O -> D -> E</div>
+        <div class="hint"><strong>Hint:</strong> Loop through all but the last character printing <code>char + " -> "</code>, then print the final character separately after the loop using <code>s.charAt(s.length() - 1)</code>.</div>
+        <div class="code-quality"><strong>Code Quality:</strong> The last character print belongs <em>outside</em> the loop — don't use an <code>if</code> inside the loop to skip the separator on the last iteration.</div>
+      </div>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- BONUS -->
+  <div class="bonus-header">
+    <span class="bonus-badge-big">BONUS</span>
+    <span class="bonus-title-big">Hard Challenge · All Concepts Combined</span>
+  </div>
+
+  <div class="task bonus" onclick="toggleTask(this)">
+    <div class="task-header">
+      <div class="checkbox" onclick="toggleDone(event, this)"></div>
+      <div>
+        <div class="task-title">Bonus — Randomized ASCII Name Banner</div>
+        <div class="badges">
+          <span class="badge badge-bonus">Random</span>
+          <span class="badge badge-bonus">Math</span>
+          <span class="badge badge-bonus">nested loops</span>
+          <span class="badge badge-bonus">string traversal</span>
+          <span class="badge badge-hard">hard</span>
+        </div>
+      </div>
+    </div>
+    <div class="task-body">
+      <div class="task-desc">
+        Write a program that takes any String (your name, a word, anything) and prints a banner where:
+        <br><br>
+        1. Each character of the String is printed on its own line, preceded by a random number of <code>*</code> stars (between 1 and 5).
+        <br><br>
+        2. Below each character line, print a separator made of <code>-</code> dashes equal in count to the <strong>maximum possible stars (5) plus 3</strong> — always the same width for alignment.
+        <br><br>
+        3. At the very end, print: <code>Total chars: X</code> where X is the string's length, and <code>Max stars possible: Y</code> where Y is computed using <code>Math.pow</code> (calculate 5 squared as a flex — don't hardcode 25).
+        <br><br>
+        Example run with <code>"HI"</code> (stars are random so yours will differ):
+      </div>
+      <div class="expected-label">Example Output (random — yours will vary)</div>
+      <div class="expected">*** H
+--------
+* I
+--------
+Total chars: 2
+Max stars possible: 25</div>
+      <div class="hint"><strong>Hint:</strong> You'll need: <code>import java.util.*;</code> at the top. Use one outer loop for string traversal (<code>charAt</code>, <code>length</code>). Inside each iteration: generate random stars with <code>rand.nextInt(5) + 1</code>, use an inner loop to print those stars, then print the character, then print the dashes separator. After the outer loop, print the summary lines using <code>s.length()</code> and <code>(int)Math.pow(5, 2)</code>.</div>
+      <div class="code-quality"><strong>Code Quality:</strong> Use <code>import java.util.*;</code> (wildcard), not <code>import java.util.Random;</code>. Declare <code>Random rand = new Random();</code> once before the loop — never inside it. Use descriptive variable names except for loop variables (<code>i</code>, <code>j</code>). Max line length: 100 chars.</div>
+    </div>
+  </div>
+
+  <footer>
+    <span>CSE 121 · Winter 2026 · Week 0–2</span>
+    <span id="footerProgress">0 / 7 tasks complete</span>
+  </footer>
+</div>
+
+<script>
+  function toggleTask(el) {
+    if (event.target.classList.contains('checkbox') ||
+        event.target.closest('.checkbox')) return;
+    el.classList.toggle('open');
+  }
+
+  function toggleDone(e, checkbox) {
+    e.stopPropagation();
+    const task = checkbox.closest('.task');
+    task.classList.toggle('done');
+    checkbox.textContent = task.classList.contains('done') ? '✓' : '';
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const total = document.querySelectorAll('.task').length;
+    const done = document.querySelectorAll('.task.done').length;
+    const pct = (done / total) * 100;
+    document.getElementById('progressBar').style.width = pct + '%';
+    document.getElementById('progressLabel').textContent = done + ' / ' + total + ' completed';
+    document.getElementById('footerProgress').textContent = done + ' / ' + total + ' tasks complete';
+  }
+
+  updateProgress();
+</script>
+</body>
+</html>
